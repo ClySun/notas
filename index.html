@@ -1,0 +1,1937 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>ÑOTAS — Spanish vocab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="icon" type="image/svg+xml" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="%23E85A2B"/><path d="M 22 80 L 22 22 L 38 22 L 62 60 L 62 22 L 78 22 L 78 80 L 62 80 L 38 42 L 38 80 Z" fill="%230F1F15"/><rect x="22" y="48" width="16" height="3" fill="%23E85A2B"/><rect x="62" y="48" width="16" height="3" fill="%23E85A2B"/><path d="M 24 12 L 32 8 L 40 14 L 48 8 L 56 14 L 64 8 L 72 14 L 78 10" stroke="%23C2D67E" stroke-width="3" fill="none" stroke-linejoin="miter"/></svg>'>
+<style>
+  :root {
+    --canopy: #0F1F15;
+    --moss: #2A3D2A;
+    --moss-light: #3a5236;
+    --acid: #C2D67E;
+    --acid-bright: #d4ec8a;
+    --rust: #E85A2B;
+    --rust-dark: #c44a1f;
+    --clay: #8B7355;
+    --bone: #E8E4D8;
+    --bone-dim: #d4cfbe;
+    --bone-bright: #f2eee2;
+    --shadow: rgba(15, 31, 21, 0.4);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+  html, body {
+    background: var(--canopy);
+    color: var(--bone);
+    font-family: 'Inter', -apple-system, sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    overflow-x: hidden;
+    min-height: 100vh;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      radial-gradient(circle at 20% 80%, rgba(194, 214, 126, 0.04) 0%, transparent 50%),
+      radial-gradient(circle at 80% 20%, rgba(232, 90, 43, 0.04) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  #app { position: relative; z-index: 1; max-width: 720px; margin: 0 auto; padding: 0 16px 80px; }
+
+  .header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 20px 0 16px;
+    border-bottom: 1px solid var(--moss);
+    margin-bottom: 24px;
+  }
+  .logo { display: flex; align-items: center; gap: 12px; }
+  .logo-icon {
+    width: 36px; height: 36px;
+    background: var(--rust);
+    border-radius: 4px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .logo-text {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700; font-size: 22px;
+    letter-spacing: -0.03em;
+  }
+  .logo-sub {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; color: var(--acid);
+    letter-spacing: 0.15em; text-transform: uppercase;
+    line-height: 1; margin-top: 2px;
+  }
+  .api-status {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase;
+    padding: 6px 10px; border-radius: 2px;
+    cursor: pointer; transition: opacity 0.15s;
+    border: none;
+  }
+  .api-status.connected { background: var(--moss); color: var(--acid); }
+  .api-status.disconnected { background: var(--rust); color: var(--bone); }
+  .api-status:hover { opacity: 0.85; }
+
+  .sync-indicator {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    padding: 6px 8px;
+    border-radius: 2px;
+    line-height: 1;
+    white-space: nowrap;
+    cursor: pointer;
+    user-select: none;
+    transition: opacity 0.15s;
+  }
+  .sync-indicator:hover { opacity: 0.7; }
+  .sync-indicator:empty { display: none; }
+  .sync-indicator.synced { color: var(--acid); }
+  .sync-indicator.syncing { color: var(--clay); animation: pulse 1.5s ease-in-out infinite; }
+  .sync-indicator.error { color: var(--rust); }
+  .sync-indicator.idle { color: var(--clay); }
+
+  .tabs {
+    display: flex;
+    border-bottom: 1px solid var(--moss);
+    margin-bottom: 28px;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .tabs::-webkit-scrollbar { display: none; }
+  .tab {
+    flex-shrink: 0;
+    background: none; border: none;
+    color: var(--clay);
+    padding: 14px 16px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all 0.15s;
+    margin-bottom: -1px;
+  }
+  .tab:hover { color: var(--bone-dim); }
+  .tab.active { color: var(--acid); border-bottom-color: var(--acid); }
+  .tab .count { color: var(--rust); margin-left: 4px; }
+
+  .section-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; color: var(--acid);
+    letter-spacing: 0.18em; text-transform: uppercase;
+    margin-bottom: 12px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .section-label::before { content: '//'; color: var(--rust); }
+
+  .input-row { display: flex; gap: 8px; margin-bottom: 16px; }
+  .input-field {
+    flex: 1;
+    background: var(--moss);
+    border: 1px solid var(--moss-light);
+    border-radius: 2px;
+    padding: 14px 16px;
+    color: var(--bone);
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 16px; font-weight: 500;
+    outline: none;
+    transition: all 0.15s;
+    width: 100%;
+  }
+  .input-field:focus { border-color: var(--acid); background: var(--canopy); }
+  .input-field::placeholder { color: var(--clay); font-weight: 400; }
+  textarea.input-field {
+    min-height: 120px; resize: vertical;
+    line-height: 1.5;
+    font-family: 'Inter', sans-serif;
+  }
+
+  .btn {
+    background: transparent;
+    border: 1px solid var(--bone-dim);
+    color: var(--bone);
+    padding: 12px 18px;
+    border-radius: 2px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; font-weight: 600;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .btn:hover:not(:disabled) { background: var(--bone); color: var(--canopy); }
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .btn-primary { background: var(--acid); border-color: var(--acid); color: var(--canopy); }
+  .btn-primary:hover:not(:disabled) { background: var(--acid-bright); border-color: var(--acid-bright); }
+  .btn-rust { background: var(--rust); border-color: var(--rust); color: var(--bone); }
+  .btn-rust:hover:not(:disabled) { background: var(--rust-dark); border-color: var(--rust-dark); }
+  .btn-ghost { border-color: var(--moss-light); color: var(--clay); }
+  .btn-ghost:hover:not(:disabled) { background: var(--moss); color: var(--bone); border-color: var(--moss); }
+  .btn-clay { border-color: var(--clay); color: var(--clay); }
+
+  .suggestion {
+    background: rgba(232, 90, 43, 0.1);
+    border-left: 3px solid var(--rust);
+    padding: 12px 14px;
+    margin-bottom: 16px;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+  }
+  .suggestion strong { font-family: 'Space Grotesk', sans-serif; color: var(--acid); font-weight: 600; }
+  .suggestion-actions { margin-left: auto; display: flex; gap: 8px; }
+  .suggestion .btn { padding: 6px 10px; font-size: 10px; }
+
+  .word-list { display: flex; flex-direction: column; gap: 8px; }
+  .word-card {
+    background: var(--moss);
+    border: 1px solid transparent;
+    border-radius: 2px;
+    padding: 14px 16px;
+    display: flex; justify-content: space-between; align-items: center; gap: 12px;
+    transition: all 0.15s;
+    cursor: pointer;
+  }
+  .word-card:hover { border-color: var(--acid); background: var(--moss-light); }
+  .word-card-content { flex: 1; min-width: 0; }
+  .word-card-spanish {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 18px; font-weight: 600;
+    letter-spacing: -0.02em;
+    margin-bottom: 2px;
+  }
+  .word-card-english {
+    font-family: 'Inter', sans-serif;
+    font-size: 14px; color: var(--bone-dim);
+  }
+  .word-card-meta {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; color: var(--clay);
+    letter-spacing: 0.1em; text-transform: uppercase;
+    margin-top: 4px;
+  }
+  .icon-btn {
+    background: none;
+    border: 1px solid transparent;
+    color: var(--clay);
+    width: 32px; height: 32px;
+    border-radius: 2px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s;
+    font-size: 16px;
+  }
+  .icon-btn:hover { color: var(--rust); border-color: var(--rust); }
+
+  .pulse {
+    color: var(--rust);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; letter-spacing: 0.15em;
+    animation: pulse 1.5s ease-in-out infinite;
+  }
+  @keyframes pulse { 0%,100%{opacity:0.4} 50%{opacity:1} }
+
+  .empty-state {
+    text-align: center;
+    padding: 48px 24px;
+    color: var(--clay);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase;
+    border: 1px dashed var(--moss-light);
+    border-radius: 2px;
+  }
+
+  /* MODAL */
+  .modal-overlay {
+    position: fixed; inset: 0;
+    background: rgba(15, 31, 21, 0.85);
+    backdrop-filter: blur(4px);
+    z-index: 100;
+    overflow-y: auto;
+    padding: 24px 16px;
+    animation: fadeIn 0.2s ease;
+  }
+  @keyframes fadeIn { from {opacity:0} to {opacity:1} }
+  .modal {
+    max-width: 640px; margin: 0 auto;
+    background: var(--canopy);
+    border: 1px solid var(--moss-light);
+    border-radius: 4px;
+    overflow: hidden;
+    animation: slideUp 0.25s ease;
+  }
+  @keyframes slideUp {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+  .modal-header {
+    background: var(--moss);
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--moss-light);
+    display: flex; justify-content: space-between; align-items: flex-start; gap: 16px;
+  }
+  .modal-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 32px; font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+    margin-bottom: 4px;
+    word-break: break-word;
+  }
+  .modal-translation {
+    font-family: 'Inter', sans-serif;
+    font-size: 15px; color: var(--acid);
+  }
+  .modal-meta {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; color: var(--clay);
+    letter-spacing: 0.15em; text-transform: uppercase;
+    margin-top: 8px;
+  }
+  .modal-close {
+    background: none;
+    border: 1px solid var(--moss-light);
+    color: var(--bone);
+    width: 36px; height: 36px;
+    border-radius: 2px;
+    cursor: pointer;
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+  .modal-close:hover { border-color: var(--rust); color: var(--rust); }
+  .modal-body { padding: 24px; }
+  .modal-loading { padding: 60px 24px; text-align: center; }
+
+  .tense-block { margin-bottom: 24px; }
+  .tense-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; color: var(--rust);
+    letter-spacing: 0.18em; text-transform: uppercase;
+    margin-bottom: 10px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--moss);
+  }
+  .conj-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 16px; }
+  .conj-row {
+    display: flex; justify-content: space-between;
+    padding: 6px 0;
+    font-size: 14px;
+    border-bottom: 1px solid var(--moss);
+  }
+  .conj-pronoun { color: var(--clay); font-family: 'Inter', sans-serif; }
+  .conj-form { font-family: 'Space Grotesk', sans-serif; font-weight: 500; }
+
+  .example {
+    background: var(--moss);
+    padding: 10px 12px;
+    border-radius: 2px;
+    margin-bottom: 6px;
+    font-size: 13px;
+    border-left: 2px solid var(--acid);
+  }
+  .example-es { font-family: 'Space Grotesk', sans-serif; font-weight: 500; }
+  .example-en { font-family: 'Inter', sans-serif; color: var(--bone-dim); font-style: italic; margin-top: 2px; font-size: 12px; }
+
+  /* REVIEW */
+  .review-container { display: flex; flex-direction: column; align-items: center; padding: 16px 0; }
+  .review-progress {
+    width: 100%; max-width: 360px;
+    margin-bottom: 12px;
+    display: flex; justify-content: space-between;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase;
+  }
+  .review-progress .current { color: var(--acid); }
+  .review-progress .total { color: var(--clay); }
+  .review-progress-bar {
+    width: 100%; max-width: 360px;
+    height: 2px; background: var(--moss);
+    margin-bottom: 24px;
+    position: relative;
+  }
+  .review-progress-fill {
+    position: absolute; left: 0; top: 0; height: 100%;
+    background: var(--acid);
+    transition: width 0.3s ease;
+  }
+
+  .flashcard {
+    width: 100%; max-width: 360px;
+    aspect-ratio: 3/4;
+    perspective: 1500px;
+    margin-bottom: 24px;
+    cursor: pointer;
+    user-select: none; -webkit-user-select: none;
+  }
+  .flashcard-inner {
+    position: relative;
+    width: 100%; height: 100%;
+    transform-style: preserve-3d;
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .flashcard.flipped .flashcard-inner { transform: rotateY(180deg); }
+  .flashcard.swiping-left .flashcard-inner {
+    transform: translateX(-120%) rotate(-15deg);
+    transition: transform 0.4s ease, opacity 0.4s ease;
+    opacity: 0;
+  }
+  .flashcard.swiping-right .flashcard-inner {
+    transform: translateX(120%) rotate(15deg);
+    transition: transform 0.4s ease, opacity 0.4s ease;
+    opacity: 0;
+  }
+  .flashcard-face {
+    position: absolute; inset: 0;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    background: var(--bone);
+    border-radius: 4px;
+    padding: 32px 24px;
+    display: flex; flex-direction: column;
+    box-shadow: 0 8px 24px var(--shadow), 0 0 0 1px var(--moss-light);
+    overflow: hidden;
+  }
+  .flashcard-face.back { transform: rotateY(180deg); background: var(--moss); }
+  .flashcard-meta {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--clay);
+  }
+  .flashcard-meta.dark { color: var(--acid); }
+  .flashcard-word {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(28px, 7vw, 42px);
+    font-weight: 700;
+    color: var(--canopy);
+    letter-spacing: -0.03em;
+    line-height: 1.05;
+    margin-top: auto; margin-bottom: auto;
+    text-align: center;
+    word-break: break-word;
+  }
+  .flashcard-word.back-word {
+    color: var(--bone);
+    font-size: clamp(24px, 6vw, 34px);
+  }
+  .flashcard-translation {
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    color: var(--bone-dim);
+    text-align: center;
+    margin-top: 12px;
+  }
+  .flashcard-accent { height: 3px; width: 40px; background: var(--rust); margin: 16px auto; }
+  .flashcard-hint {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase;
+    color: var(--clay);
+    text-align: center;
+  }
+
+  .review-actions {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    width: 100%; max-width: 360px;
+  }
+  .review-actions .btn {
+    padding: 14px 8px;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+  }
+  .review-finished { text-align: center; padding: 60px 24px; }
+  .review-finished h2 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 32px; font-weight: 700;
+    color: var(--acid);
+    letter-spacing: -0.02em;
+    margin-bottom: 12px;
+  }
+  .review-finished p { color: var(--bone-dim); margin-bottom: 24px; }
+
+  /* STATS */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 8px;
+    margin-bottom: 24px;
+  }
+  .stat-card {
+    background: var(--moss);
+    border-radius: 2px;
+    padding: 16px;
+    border-left: 3px solid var(--acid);
+  }
+  .stat-card.rust { border-left-color: var(--rust); }
+  .stat-card.clay { border-left-color: var(--clay); }
+  .stat-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; color: var(--clay);
+    letter-spacing: 0.15em; text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .stat-value {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 32px; font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1;
+  }
+  .stat-sub { font-family: 'Inter', sans-serif; font-size: 12px; color: var(--bone-dim); margin-top: 4px; }
+
+  .import-actions { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+  .file-input { display: none; }
+  .parsing-result {
+    margin-top: 16px;
+    background: var(--moss);
+    border-radius: 2px;
+    padding: 16px;
+    border-left: 3px solid var(--acid);
+  }
+  .parsing-result h4 {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; color: var(--acid);
+    letter-spacing: 0.15em; text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  .parsed-word {
+    display: flex; justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--moss-light);
+    font-size: 14px;
+  }
+  .parsed-word:last-child { border-bottom: none; }
+  .parsed-word-es { font-family: 'Space Grotesk', sans-serif; font-weight: 500; }
+  .parsed-word-en { font-family: 'Inter', sans-serif; color: var(--bone-dim); }
+
+  .settings-section { margin-bottom: 24px; }
+  .settings-help {
+    font-family: 'Inter', sans-serif;
+    font-size: 13px; color: var(--bone-dim);
+    margin-top: 8px; line-height: 1.5;
+  }
+  .settings-help a { color: var(--acid); text-decoration: none; }
+  .settings-help a:hover { text-decoration: underline; }
+
+  .toast {
+    position: fixed;
+    bottom: 24px; left: 50%;
+    transform: translateX(-50%);
+    background: var(--canopy);
+    border: 1px solid var(--acid);
+    color: var(--bone);
+    padding: 12px 20px;
+    border-radius: 2px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase;
+    z-index: 200;
+    box-shadow: 0 4px 16px var(--shadow);
+    animation: toastIn 0.3s ease;
+    max-width: 90%;
+    text-align: center;
+  }
+  @keyframes toastIn {
+    from { transform: translate(-50%, 20px); opacity: 0; }
+    to { transform: translate(-50%, 0); opacity: 1; }
+  }
+  .toast.error { border-color: var(--rust); }
+  .toast.fade-out { animation: toastOut 0.3s ease forwards; }
+  @keyframes toastOut {
+    to { transform: translate(-50%, 20px); opacity: 0; }
+  }
+
+  .filter-row { display: flex; gap: 6px; margin-bottom: 16px; flex-wrap: wrap; }
+
+  @media (max-width: 520px) {
+    #app { padding: 0 12px 80px; }
+    .modal-title { font-size: 26px; }
+    .conj-grid { grid-template-columns: 1fr; gap: 0; }
+    .input-row { flex-direction: column; }
+    .input-row .btn { width: 100%; }
+    .header { padding: 16px 0 12px; }
+    .logo-text { font-size: 18px; }
+    .tab { padding: 12px 12px; font-size: 11px; }
+  }
+</style>
+</head>
+<body>
+
+<div id="app">
+  <header class="header">
+    <div class="logo">
+      <div class="logo-icon">
+        <svg viewBox="0 0 100 100" width="22" height="22">
+          <path d="M 22 80 L 22 22 L 38 22 L 62 60 L 62 22 L 78 22 L 78 80 L 62 80 L 38 42 L 38 80 Z" fill="#0F1F15"/>
+          <rect x="22" y="48" width="16" height="3" fill="#E85A2B"/>
+          <rect x="62" y="48" width="16" height="3" fill="#E85A2B"/>
+          <path d="M 24 12 L 32 8 L 40 14 L 48 8 L 56 14 L 64 8 L 72 14 L 78 10" stroke="#C2D67E" stroke-width="3" fill="none" stroke-linejoin="miter"/>
+        </svg>
+      </div>
+      <div>
+        <div class="logo-text">ÑOTAS</div>
+        <div class="logo-sub">Spanish · vocab</div>
+      </div>
+    </div>
+    <div style="display: flex; gap: 6px; align-items: center;">
+      <span id="syncIndicator" class="sync-indicator" onclick="window.__notasSyncClick && window.__notasSyncClick()"></span>
+      <button id="apiBtn" class="api-status disconnected">○ SET API KEY</button>
+    </div>
+  </header>
+
+  <nav class="tabs" id="tabs">
+    <button class="tab active" data-tab="add">Add</button>
+    <button class="tab" data-tab="review">Review<span class="count" id="dueCount">[0]</span></button>
+    <button class="tab" data-tab="all">All<span class="count" id="totalCount">[0]</span></button>
+    <button class="tab" data-tab="stats">Stats</button>
+  </nav>
+
+  <main id="main"></main>
+</div>
+
+<script>
+'use strict';
+
+// ============= STATE =============
+const state = {
+  words: [],
+  apiKey: '',
+  syncUrl: '',
+  syncStatus: 'idle',
+  lastSyncedAt: 0,
+  tab: 'add',
+  loaded: false
+};
+
+// ============= STORAGE =============
+async function storageGet(key) {
+  try {
+    if (window.storage) {
+      const r = await window.storage.get(key);
+      return r ? JSON.parse(r.value) : null;
+    } else {
+      const v = localStorage.getItem('notas_' + key);
+      return v ? JSON.parse(v) : null;
+    }
+  } catch (e) { return null; }
+}
+
+async function storageSet(key, val) {
+  try {
+    if (window.storage) {
+      await window.storage.set(key, JSON.stringify(val));
+    } else {
+      localStorage.setItem('notas_' + key, JSON.stringify(val));
+    }
+    return true;
+  } catch (e) { return false; }
+}
+
+// ============= SYNC TO GOOGLE SHEET =============
+let syncTimer = null;
+let syncInFlight = false;
+let syncPending = false;
+
+function setSyncStatus(status) {
+  state.syncStatus = status;
+  const indicator = document.getElementById('syncIndicator');
+  if (!indicator) return;
+  indicator.className = 'sync-indicator ' + status;
+  if (status === 'synced') {
+    indicator.textContent = '◉ SYNCED';
+    indicator.title = state.lastSyncedAt ? 'Last synced ' + new Date(state.lastSyncedAt).toLocaleString() : 'Synced';
+  } else if (status === 'syncing') {
+    indicator.textContent = '◌ SYNCING';
+    indicator.title = 'Syncing to Google Sheets...';
+  } else if (status === 'error') {
+    indicator.textContent = '◯ SYNC ERROR';
+    indicator.title = 'Sync failed: ' + (state.lastSyncError || 'Unknown error') + '\n\nClick to see details';
+  } else if (status === 'idle' && state.syncUrl) {
+    indicator.textContent = '◌ READY';
+    indicator.title = 'Sync configured, ready';
+  } else {
+    indicator.textContent = '';
+    indicator.title = '';
+  }
+}
+
+async function pushToSheet() {
+  if (!state.syncUrl) return false;
+  if (syncInFlight) { syncPending = true; return false; }
+  syncInFlight = true;
+  setSyncStatus('syncing');
+  try {
+    const payload = {
+      action: 'save',
+      words: state.words,
+      savedAt: Date.now()
+    };
+    // Use text/plain to avoid CORS preflight on Apps Script
+    const res = await fetch(state.syncUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(payload)
+    });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const result = await res.json();
+    if (result.status !== 'ok') throw new Error(result.error || 'Unknown error');
+    state.lastSyncedAt = Date.now();
+    await storageSet('lastSyncedAt', state.lastSyncedAt);
+    setSyncStatus('synced');
+    syncInFlight = false;
+    if (syncPending) {
+      syncPending = false;
+      setTimeout(pushToSheet, 500);
+    }
+    return true;
+  } catch (e) {
+    setSyncStatus('error');
+    syncInFlight = false;
+    state.lastSyncError = e.message || String(e);
+    // Use warn instead of error to avoid alarming console output for expected network blips
+    console.warn('[notas] Sync skipped:', state.lastSyncError);
+    return false;
+  }
+}
+
+function scheduleSync() {
+  if (!state.syncUrl) return;
+  if (syncTimer) clearTimeout(syncTimer);
+  syncTimer = setTimeout(pushToSheet, 1500);
+}
+
+async function pullFromSheet() {
+  if (!state.syncUrl) throw new Error('No sync URL configured');
+  setSyncStatus('syncing');
+  const payload = { action: 'load' };
+  const res = await fetch(state.syncUrl, {
+    method: 'POST',
+    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+    body: JSON.stringify(payload)
+  });
+  if (!res.ok) {
+    setSyncStatus('error');
+    throw new Error('HTTP ' + res.status);
+  }
+  const result = await res.json();
+  if (result.status !== 'ok') {
+    setSyncStatus('error');
+    throw new Error(result.error || 'Unknown error');
+  }
+  setSyncStatus('synced');
+  return result.words || [];
+}
+
+// ============= EXPORT / IMPORT JSON =============
+function exportJson() {
+  const data = {
+    app: 'notas',
+    version: 1,
+    exportedAt: new Date().toISOString(),
+    words: state.words
+  };
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const date = new Date().toISOString().slice(0, 10);
+  a.href = url;
+  a.download = 'notas-backup-' + date + '.json';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+async function importJson(file) {
+  const text = await file.text();
+  const data = JSON.parse(text);
+  if (!data.words || !Array.isArray(data.words)) {
+    throw new Error('Invalid backup file');
+  }
+  return data.words;
+}
+
+// ============= SM-2 ALGORITHM =============
+function sm2(card, quality) {
+  let { ease = 2.5, interval = 0, reps = 0 } = card;
+  if (quality < 3) {
+    reps = 0;
+    interval = 1;
+  } else {
+    if (reps === 0) interval = 1;
+    else if (reps === 1) interval = 6;
+    else interval = Math.round(interval * ease);
+    reps += 1;
+  }
+  ease = ease + (0.1 - (5 - quality) * (0.08 + (5 - quality) * 0.02));
+  if (ease < 1.3) ease = 1.3;
+  const nextDue = Date.now() + interval * 24 * 60 * 60 * 1000;
+  return { ...card, ease, interval, reps, nextDue, lastReviewed: Date.now() };
+}
+
+function isDue(card) {
+  if (!card.nextDue) return true;
+  return card.nextDue <= Date.now();
+}
+
+// ============= CLAUDE API =============
+async function callClaude(messages, systemPrompt) {
+  if (!state.apiKey) throw new Error('No API key set');
+  const body = {
+    model: 'claude-haiku-4-5-20251001',
+    max_tokens: 2000,
+    messages: messages
+  };
+  if (systemPrompt) body.system = systemPrompt;
+
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': state.apiKey,
+      'anthropic-version': '2023-06-01',
+      'anthropic-dangerous-direct-browser-access': 'true'
+    },
+    body: JSON.stringify(body)
+  });
+  if (!res.ok) {
+    const err = await res.text();
+    throw new Error('API error ' + res.status + ': ' + err.slice(0, 200));
+  }
+  const data = await res.json();
+  return data.content[0].text;
+}
+
+function extractJson(text) {
+  const fence = text.match(/```(?:json)?\s*([\s\S]*?)```/);
+  if (fence) text = fence[1];
+  const startObj = text.indexOf('{');
+  const startArr = text.indexOf('[');
+  let start;
+  if (startObj === -1) start = startArr;
+  else if (startArr === -1) start = startObj;
+  else start = Math.min(startObj, startArr);
+  if (start === -1) throw new Error('No JSON found in response');
+  return JSON.parse(text.slice(start));
+}
+
+async function lookupWord(word) {
+  const sys = `You are a Spanish dictionary assistant. Given a Spanish word or phrase, respond ONLY with valid JSON in this exact shape:
+{
+  "spanish": "the corrected/canonical Spanish word",
+  "english": "concise English translation (under 60 chars)",
+  "partOfSpeech": "noun|verb|adjective|adverb|conjunction|preposition|pronoun|interjection|phrase",
+  "gender": "m|f|null (only for nouns, else null)",
+  "typoSuggestion": "corrected word if input has typo, else null",
+  "isVerb": true|false,
+  "infinitive": "infinitive form if it's a verb, else null"
+}
+If the input is unclear or not Spanish, set typoSuggestion to your best guess. No other text, no markdown, just the JSON object.`;
+  const text = await callClaude([{ role: 'user', content: word }], sys);
+  return extractJson(text);
+}
+
+async function getConjugations(infinitive) {
+  const sys = `You are a Spanish conjugation expert. Given a Spanish verb infinitive, respond ONLY with valid JSON in this shape:
+{
+  "infinitive": "...",
+  "english": "to ...",
+  "type": "regular -ar|regular -er|regular -ir|irregular|stem-changing|reflexive",
+  "tenses": {
+    "present": { "yo":"", "tu":"", "el":"", "nosotros":"", "vosotros":"", "ellos":"" },
+    "preterite": { "yo":"", "tu":"", "el":"", "nosotros":"", "vosotros":"", "ellos":"" },
+    "imperfect": { "yo":"", "tu":"", "el":"", "nosotros":"", "vosotros":"", "ellos":"" },
+    "future": { "yo":"", "tu":"", "el":"", "nosotros":"", "vosotros":"", "ellos":"" },
+    "conditional": { "yo":"", "tu":"", "el":"", "nosotros":"", "vosotros":"", "ellos":"" },
+    "presentSubjunctive": { "yo":"", "tu":"", "el":"", "nosotros":"", "vosotros":"", "ellos":"" },
+    "imperfectSubjunctive": { "yo":"", "tu":"", "el":"", "nosotros":"", "vosotros":"", "ellos":"" }
+  },
+  "examples": [
+    { "es": "Spanish example sentence", "en": "English translation" },
+    { "es": "...", "en": "..." }
+  ]
+}
+Provide exactly 2 example sentences. No other text, no markdown.`;
+  const text = await callClaude([{ role: 'user', content: infinitive }], sys);
+  return extractJson(text);
+}
+
+async function parseTextDump(text) {
+  const sys = `You are a Spanish vocabulary parser. The user will paste text containing Spanish words/phrases (possibly mixed with English, line breaks, commas, or numbering). Extract ALL distinct Spanish vocabulary items and respond ONLY with valid JSON:
+{
+  "words": [
+    { "spanish": "...", "english": "...", "partOfSpeech": "...", "gender": "m|f|null", "isVerb": true|false, "infinitive": "..." }
+  ]
+}
+Skip duplicates. Skip pure English. Correct obvious typos. No other text, no markdown.`;
+  const result = await callClaude([{ role: 'user', content: text }], sys);
+  return extractJson(result);
+}
+
+// ============= DOM HELPERS =============
+function el(tag, attrs, ...children) {
+  const node = document.createElement(tag);
+  const booleanAttrs = { disabled: 1, checked: 1, readonly: 1, required: 1, autofocus: 1, multiple: 1, hidden: 1 };
+  if (attrs) {
+    for (const k in attrs) {
+      if (k === 'class') node.className = attrs[k];
+      else if (k === 'style') node.setAttribute('style', attrs[k]);
+      else if (k.startsWith('on') && typeof attrs[k] === 'function') {
+        node.addEventListener(k.slice(2).toLowerCase(), attrs[k]);
+      } else if (k === 'html') node.innerHTML = attrs[k];
+      else if (booleanAttrs[k]) {
+        // Set as property, not attribute — value matters as truthy/falsy
+        if (attrs[k]) node.setAttribute(k, '');
+      }
+      else if (attrs[k] !== false && attrs[k] != null) node.setAttribute(k, attrs[k]);
+    }
+  }
+  for (const c of children) {
+    if (c == null || c === false) continue;
+    if (Array.isArray(c)) c.forEach(x => x != null && node.appendChild(typeof x === 'string' ? document.createTextNode(x) : x));
+    else if (typeof c === 'string' || typeof c === 'number') node.appendChild(document.createTextNode(c));
+    else node.appendChild(c);
+  }
+  return node;
+}
+
+function clear(node) { while (node.firstChild) node.removeChild(node.firstChild); }
+
+function withArticle(w) {
+  const stripped = w.spanish.replace(/^(el |la |los |las )/i, '');
+  if (w.gender === 'm') return 'el ' + stripped;
+  if (w.gender === 'f') return 'la ' + stripped;
+  return stripped;
+}
+
+// ============= TOAST =============
+function showToast(message, type) {
+  const existing = document.querySelector('.toast');
+  if (existing) existing.remove();
+  const t = el('div', { class: 'toast' + (type === 'error' ? ' error' : '') }, message);
+  document.body.appendChild(t);
+  setTimeout(() => {
+    t.classList.add('fade-out');
+    setTimeout(() => t.remove(), 300);
+  }, 2400);
+}
+
+// ============= MODALS =============
+function closeModal() {
+  const m = document.querySelector('.modal-overlay');
+  if (m) m.remove();
+}
+
+function openSettingsModal() {
+  closeModal();
+  const apiInput = el('input', {
+    type: 'password',
+    class: 'input-field',
+    value: state.apiKey || '',
+    placeholder: 'sk-ant-...',
+    style: 'width: 100%;',
+    autocomplete: 'off'
+  });
+
+  const syncInput = el('input', {
+    type: 'text',
+    class: 'input-field',
+    value: state.syncUrl || '',
+    placeholder: 'https://script.google.com/macros/s/.../exec',
+    style: 'width: 100%; font-size: 13px;',
+    autocomplete: 'off'
+  });
+
+  const fileInput = el('input', {
+    type: 'file',
+    accept: '.json',
+    class: 'file-input'
+  });
+  fileInput.addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    try {
+      const words = await importJson(file);
+      if (!confirm('Import ' + words.length + ' words? This will REPLACE your current ' + state.words.length + ' words.')) {
+        e.target.value = '';
+        return;
+      }
+      state.words = words;
+      await saveWords();
+      showToast('Imported ' + words.length + ' words');
+      closeModal();
+      renderTab();
+      renderHeader();
+    } catch (err) {
+      showToast('Import failed: ' + err.message, 'error');
+    }
+    e.target.value = '';
+  });
+
+  const lastSyncedText = state.lastSyncedAt
+    ? 'Last synced ' + new Date(state.lastSyncedAt).toLocaleString()
+    : 'Never synced';
+
+  const overlay = el('div', { class: 'modal-overlay', onClick: (e) => { if (e.target === overlay) closeModal(); } },
+    el('div', { class: 'modal' },
+      el('div', { class: 'modal-header' },
+        el('div', null,
+          el('div', { class: 'modal-title' }, 'Settings'),
+          el('div', { class: 'modal-meta' }, 'CONFIG // API_KEY // BACKUP')
+        ),
+        el('button', { class: 'modal-close', onClick: closeModal }, '×')
+      ),
+      el('div', { class: 'modal-body' },
+
+        el('div', { class: 'settings-section' },
+          el('div', { class: 'section-label' }, 'Anthropic API key'),
+          apiInput,
+          el('div', { class: 'settings-help', html: 'Get a key at <a href="https://console.anthropic.com/" target="_blank" rel="noopener">console.anthropic.com</a>. Stored locally only.' })
+        ),
+
+        el('div', { class: 'settings-section' },
+          el('div', { class: 'section-label' }, 'Google Sheets backup URL'),
+          syncInput,
+          el('div', { class: 'settings-help', html: 'Auto-syncs your words to a Google Sheet you control. <a href="#" id="setupHelpLink">See setup instructions →</a>' }),
+          el('div', { style: 'margin-top: 10px; font-family: \'JetBrains Mono\', monospace; font-size: 10px; color: var(--clay); letter-spacing: 0.1em;' }, lastSyncedText.toUpperCase()),
+          el('div', { style: 'display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap;' },
+            el('button', {
+              class: 'btn btn-ghost',
+              onClick: async () => {
+                if (!state.syncUrl) { showToast('Save sync URL first', 'error'); return; }
+                const ok = await pushToSheet();
+                showToast(ok ? 'Synced to sheet' : 'Sync failed', ok ? null : 'error');
+              }
+            }, '↑ Sync now'),
+            el('button', {
+              class: 'btn btn-ghost',
+              onClick: async () => {
+                if (!state.syncUrl) { showToast('Save sync URL first', 'error'); return; }
+                if (!confirm('Restore from sheet? This will REPLACE your current ' + state.words.length + ' words with whatever is in the sheet.')) return;
+                try {
+                  const words = await pullFromSheet();
+                  state.words = words;
+                  await storageSet('words', state.words);
+                  showToast('Restored ' + words.length + ' words');
+                  closeModal();
+                  renderTab();
+                  renderHeader();
+                } catch (err) {
+                  showToast('Restore failed: ' + err.message, 'error');
+                }
+              }
+            }, '↓ Restore from sheet')
+          )
+        ),
+
+        el('div', { class: 'settings-section' },
+          el('div', { class: 'section-label' }, 'Manual backup'),
+          el('div', { class: 'settings-help' }, 'Download or restore from a JSON file — works offline, no account needed.'),
+          el('div', { style: 'display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap;' },
+            el('button', { class: 'btn btn-ghost', onClick: exportJson }, '↓ Export JSON'),
+            el('button', { class: 'btn btn-ghost', onClick: () => fileInput.click() }, '↑ Import JSON'),
+            fileInput
+          )
+        ),
+
+        el('div', { style: 'display: flex; gap: 8px; justify-content: flex-end; padding-top: 8px; border-top: 1px solid var(--moss);' },
+          el('button', { class: 'btn btn-ghost', onClick: closeModal }, 'Cancel'),
+          el('button', {
+            class: 'btn btn-primary',
+            onClick: async () => {
+              const k = apiInput.value.trim();
+              const u = syncInput.value.trim();
+              const urlChanged = u !== state.syncUrl;
+              await storageSet('apiKey', k);
+              await storageSet('syncUrl', u);
+              state.apiKey = k;
+              state.syncUrl = u;
+              renderHeader();
+              setSyncStatus(u ? 'idle' : 'idle');
+              closeModal();
+              showToast('Settings saved');
+              if (urlChanged && u && state.words.length > 0) {
+                setTimeout(() => pushToSheet(), 500);
+              }
+            }
+          }, 'Save')
+        )
+      )
+    )
+  );
+  document.body.appendChild(overlay);
+
+  // Wire up the setup help link
+  setTimeout(() => {
+    const link = document.getElementById('setupHelpLink');
+    if (link) {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        closeModal();
+        openSetupHelpModal();
+      });
+    }
+    apiInput.focus();
+  }, 100);
+}
+
+function openSetupHelpModal() {
+  closeModal();
+  const stepStyle = 'margin-bottom: 18px; padding-bottom: 18px; border-bottom: 1px solid var(--moss);';
+  const codeStyle = 'background: var(--moss); padding: 10px 12px; border-radius: 2px; font-family: \'JetBrains Mono\', monospace; font-size: 11px; color: var(--acid); display: block; white-space: pre-wrap; word-break: break-all; margin-top: 6px; line-height: 1.5;';
+
+  const appsScriptCode = `function doPost(e) {
+  const SHEET_NAME = 'Notas';
+  try {
+    const data = JSON.parse(e.postData.contents);
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    let sheet = ss.getSheetByName(SHEET_NAME);
+    if (!sheet) sheet = ss.insertSheet(SHEET_NAME);
+
+    if (data.action === 'save') {
+      sheet.clear();
+      const headers = ['id','spanish','english','partOfSpeech','gender',
+        'isVerb','infinitive','added','ease','interval','reps',
+        'nextDue','lastReviewed','conjugationsJson'];
+      sheet.appendRow(headers);
+      const rows = (data.words || []).map(w => [
+        w.id, w.spanish, w.english, w.partOfSpeech, w.gender || '',
+        w.isVerb || false, w.infinitive || '',
+        w.added ? new Date(w.added).toISOString() : '',
+        w.ease || 2.5, w.interval || 0, w.reps || 0,
+        w.nextDue ? new Date(w.nextDue).toISOString() : '',
+        w.lastReviewed ? new Date(w.lastReviewed).toISOString() : '',
+        w.conjugations ? JSON.stringify(w.conjugations) : ''
+      ]);
+      if (rows.length) sheet.getRange(2, 1, rows.length, headers.length).setValues(rows);
+      return ContentService.createTextOutput(JSON.stringify({status:'ok', count: rows.length}))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+
+    if (data.action === 'load') {
+      const values = sheet.getDataRange().getValues();
+      if (values.length < 2) {
+        return ContentService.createTextOutput(JSON.stringify({status:'ok', words: []}))
+          .setMimeType(ContentService.MimeType.JSON);
+      }
+      const headers = values[0];
+      const words = values.slice(1).map(row => {
+        const w = {};
+        headers.forEach((h, i) => { w[h] = row[i]; });
+        if (w.added) w.added = new Date(w.added).getTime();
+        if (w.nextDue) w.nextDue = new Date(w.nextDue).getTime();
+        if (w.lastReviewed) w.lastReviewed = new Date(w.lastReviewed).getTime();
+        if (w.conjugationsJson) {
+          try { w.conjugations = JSON.parse(w.conjugationsJson); } catch(e) {}
+        }
+        delete w.conjugationsJson;
+        return w;
+      });
+      return ContentService.createTextOutput(JSON.stringify({status:'ok', words: words}))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+
+    return ContentService.createTextOutput(JSON.stringify({status:'error', error:'Unknown action'}))
+      .setMimeType(ContentService.MimeType.JSON);
+  } catch (err) {
+    return ContentService.createTextOutput(JSON.stringify({status:'error', error: err.toString()}))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+}`;
+
+  const overlay = el('div', { class: 'modal-overlay', onClick: (e) => { if (e.target === overlay) closeModal(); } },
+    el('div', { class: 'modal' },
+      el('div', { class: 'modal-header' },
+        el('div', null,
+          el('div', { class: 'modal-title' }, 'Sheets sync setup'),
+          el('div', { class: 'modal-meta' }, 'ONE-TIME // ~5 MIN')
+        ),
+        el('button', { class: 'modal-close', onClick: closeModal }, '×')
+      ),
+      el('div', { class: 'modal-body' },
+        el('div', { style: stepStyle },
+          el('div', { class: 'tense-label' }, 'Step 1 — Create a sheet'),
+          el('div', { html: 'Go to <a href="https://sheets.new" target="_blank" rel="noopener" style="color: var(--acid);">sheets.new</a> to create a fresh Google Sheet. Name it whatever you want (e.g. "Notas backup").', style: 'color: var(--bone-dim); line-height: 1.6;' })
+        ),
+        el('div', { style: stepStyle },
+          el('div', { class: 'tense-label' }, 'Step 2 — Open Apps Script'),
+          el('div', { html: 'In the sheet, click <strong style="color: var(--acid);">Extensions → Apps Script</strong>. A new tab opens with a code editor.', style: 'color: var(--bone-dim); line-height: 1.6;' })
+        ),
+        el('div', { style: stepStyle },
+          el('div', { class: 'tense-label' }, 'Step 3 — Paste this code'),
+          el('div', { html: 'Delete whatever\'s in <code style="color: var(--acid);">Code.gs</code> and paste this in. Then click the save icon (⌘S).', style: 'color: var(--bone-dim); line-height: 1.6;' }),
+          el('div', { style: 'position: relative;' },
+            el('button', {
+              class: 'btn btn-ghost',
+              style: 'position: absolute; top: 12px; right: 12px; padding: 4px 8px; font-size: 9px; z-index: 1;',
+              onClick: async (e) => {
+                try {
+                  await navigator.clipboard.writeText(appsScriptCode);
+                  e.target.textContent = '✓ COPIED';
+                  setTimeout(() => { e.target.textContent = 'COPY'; }, 1500);
+                } catch (err) {
+                  showToast('Copy failed', 'error');
+                }
+              }
+            }, 'COPY'),
+            el('code', { style: codeStyle + ' max-height: 200px; overflow-y: auto;' }, appsScriptCode)
+          )
+        ),
+        el('div', { style: stepStyle },
+          el('div', { class: 'tense-label' }, 'Step 4 — Deploy as web app'),
+          el('div', { style: 'color: var(--bone-dim); line-height: 1.7;', html:
+            'Click <strong style="color: var(--acid);">Deploy → New deployment</strong>.<br>' +
+            'Click the gear icon next to "Select type" → choose <strong style="color: var(--acid);">Web app</strong>.<br>' +
+            'Set <strong style="color: var(--acid);">Execute as: Me</strong>.<br>' +
+            'Set <strong style="color: var(--acid);">Who has access: Only myself</strong> (or "Anyone with the link" — both work).<br>' +
+            'Click <strong style="color: var(--acid);">Deploy</strong>. You\'ll have to authorize it once (Google will warn you it\'s "unverified" — click Advanced → Go to [project name] → Allow).'
+          })
+        ),
+        el('div', { style: stepStyle },
+          el('div', { class: 'tense-label' }, 'Step 5 — Copy the web app URL'),
+          el('div', { html: 'After deployment, copy the <strong style="color: var(--acid);">Web app URL</strong> (ends with <code style="color: var(--acid);">/exec</code>). Paste it into the "Google Sheets backup URL" field in settings, then click Save.', style: 'color: var(--bone-dim); line-height: 1.6;' })
+        ),
+        el('div', { style: 'background: rgba(194, 214, 126, 0.08); border-left: 3px solid var(--acid); padding: 12px 14px; margin-top: 8px; font-size: 13px; line-height: 1.6;' },
+          el('strong', { style: 'color: var(--acid);' }, 'That\'s it.'),
+          ' From now on, every change you make auto-syncs to your sheet within ~2 seconds. You can also manually sync or restore from settings.'
+        ),
+        el('div', { style: 'display: flex; gap: 8px; justify-content: flex-end; margin-top: 20px;' },
+          el('button', { class: 'btn btn-primary', onClick: () => { closeModal(); openSettingsModal(); } }, 'Back to settings')
+        )
+      )
+    )
+  );
+  document.body.appendChild(overlay);
+}
+
+const tenseLabels = {
+  present: 'Present',
+  preterite: 'Preterite',
+  imperfect: 'Imperfect',
+  future: 'Future',
+  conditional: 'Conditional',
+  presentSubjunctive: 'Present subjunctive',
+  imperfectSubjunctive: 'Imperfect subjunctive'
+};
+const pronouns = [['yo', 'yo'], ['tu', 'tú'], ['el', 'él/ella'], ['nosotros', 'nosotros'], ['vosotros', 'vosotros'], ['ellos', 'ellos/ellas']];
+
+function openElaborateModal(word) {
+  closeModal();
+
+  const body = el('div', { class: 'modal-body' });
+
+  const overlay = el('div', { class: 'modal-overlay', onClick: (e) => { if (e.target === overlay) closeModal(); } },
+    el('div', { class: 'modal' },
+      el('div', { class: 'modal-header' },
+        el('div', { style: 'flex: 1; min-width: 0;' },
+          el('div', { class: 'modal-title' }, withArticle(word)),
+          el('div', { class: 'modal-translation' }, word.english),
+          el('div', { class: 'modal-meta' },
+            word.partOfSpeech +
+            (word.gender ? ' · ' + (word.gender === 'm' ? 'masculine' : 'feminine') : '') +
+            (word.conjugations && word.conjugations.type ? ' · ' + word.conjugations.type : '')
+          )
+        ),
+        el('button', { class: 'modal-close', onClick: closeModal }, '×')
+      ),
+      body
+    )
+  );
+  document.body.appendChild(overlay);
+
+  // Render content
+  if (!word.isVerb) {
+    let helpText = 'No conjugations — this is a ' + word.partOfSpeech + '.';
+    if (word.partOfSpeech === 'noun' && word.gender) {
+      helpText = 'This is a ' + (word.gender === 'm' ? 'masculine' : 'feminine') + ' noun.';
+    }
+    body.appendChild(el('div', { style: 'padding: 16px 0; color: var(--bone-dim); line-height: 1.6;' }, helpText));
+    return;
+  }
+
+  if (!state.apiKey) {
+    body.appendChild(el('div', { class: 'empty-state' }, 'API key required for conjugations'));
+    return;
+  }
+
+  const renderConjugations = (data) => {
+    clear(body);
+    body.style.padding = '24px';
+    Object.keys(tenseLabels).forEach(key => {
+      const t = data.tenses && data.tenses[key];
+      if (!t) return;
+      const block = el('div', { class: 'tense-block' },
+        el('div', { class: 'tense-label' }, tenseLabels[key]),
+        el('div', { class: 'conj-grid' },
+          ...pronouns.map(([k, display]) =>
+            el('div', { class: 'conj-row' },
+              el('span', { class: 'conj-pronoun' }, display),
+              el('span', { class: 'conj-form' }, t[k] || '—')
+            )
+          )
+        )
+      );
+      body.appendChild(block);
+    });
+    if (data.examples && data.examples.length > 0) {
+      const ex = el('div', { class: 'tense-block' },
+        el('div', { class: 'tense-label' }, 'Examples'),
+        ...data.examples.map(e =>
+          el('div', { class: 'example' },
+            el('div', { class: 'example-es' }, e.es),
+            el('div', { class: 'example-en' }, e.en)
+          )
+        )
+      );
+      body.appendChild(ex);
+    }
+  };
+
+  if (word.conjugations) {
+    renderConjugations(word.conjugations);
+    return;
+  }
+
+  // Loading
+  body.innerHTML = '<div class="modal-loading"><div class="pulse">LOADING CONJUGATIONS...</div></div>';
+
+  getConjugations(word.infinitive || word.spanish)
+    .then(data => {
+      const idx = state.words.findIndex(w => w.id === word.id);
+      if (idx >= 0) {
+        state.words[idx] = { ...state.words[idx], conjugations: data };
+        saveWords();
+      }
+      renderConjugations(data);
+    })
+    .catch(e => {
+      clear(body);
+      body.appendChild(el('div', { class: 'empty-state' }, 'Failed: ' + e.message));
+    });
+}
+
+// ============= TABS =============
+const main = document.getElementById('main');
+
+function renderTab() {
+  clear(main);
+  if (state.tab === 'add') renderAddTab();
+  else if (state.tab === 'review') renderReviewTab();
+  else if (state.tab === 'all') renderAllTab();
+  else if (state.tab === 'stats') renderStatsTab();
+}
+
+// ============= ADD TAB =============
+let addTabState = { input: '', bulkInput: '', showBulk: false, suggestion: null, parsed: null };
+
+function renderAddTab() {
+  const input = el('input', {
+    type: 'text',
+    class: 'input-field',
+    value: addTabState.input,
+    placeholder: 'e.g. hablar, la biblioteca, aunque...',
+    onInput: (e) => { addTabState.input = e.target.value; },
+    onKeyDown: (e) => { if (e.key === 'Enter') handleAdd(); }
+  });
+
+  const addBtn = el('button', { class: 'btn btn-primary', onClick: () => handleAdd() }, '[ Add ]');
+
+  const handleAdd = async (forceWord) => {
+    const word = (forceWord || addTabState.input).trim();
+    if (!word) return;
+    if (!state.apiKey) {
+      showToast('Add API key in settings', 'error');
+      openSettingsModal();
+      return;
+    }
+    addBtn.textContent = '...';
+    addBtn.disabled = true;
+    input.disabled = true;
+    addTabState.suggestion = null;
+    try {
+      const result = await lookupWord(word);
+      if (result.typoSuggestion && result.typoSuggestion.toLowerCase() !== word.toLowerCase() && !forceWord) {
+        addTabState.suggestion = { original: word, ...result, typoSuggestion: result.typoSuggestion };
+        renderTab();
+        return;
+      }
+      const dup = state.words.find(w => w.spanish.toLowerCase() === result.spanish.toLowerCase());
+      if (dup) {
+        showToast('Already in your deck');
+        addTabState.input = '';
+        renderTab();
+        return;
+      }
+      state.words.push({
+        id: Date.now() + Math.random(),
+        spanish: result.spanish,
+        english: result.english,
+        partOfSpeech: result.partOfSpeech,
+        gender: result.gender,
+        isVerb: result.isVerb,
+        infinitive: result.infinitive,
+        added: Date.now(),
+        ease: 2.5, interval: 0, reps: 0, nextDue: Date.now()
+      });
+      await saveWords();
+      showToast('Added: ' + result.spanish);
+      addTabState.input = '';
+      renderTab();
+      renderHeader();
+    } catch (e) {
+      showToast('Lookup failed: ' + e.message.slice(0, 60), 'error');
+      addBtn.textContent = '[ Add ]';
+      addBtn.disabled = false;
+      input.disabled = false;
+    }
+  };
+
+  main.appendChild(el('div', { class: 'section-label' }, 'Add new word or phrase'));
+  main.appendChild(el('div', { class: 'input-row' }, input, addBtn));
+
+  // Suggestion
+  if (addTabState.suggestion) {
+    const sug = addTabState.suggestion;
+    main.appendChild(
+      el('div', { class: 'suggestion' },
+        el('span', null, 'Did you mean ', el('strong', null, sug.typoSuggestion || sug.spanish), '?'),
+        el('div', { class: 'suggestion-actions' },
+          el('button', {
+            class: 'btn btn-primary',
+            onClick: () => { addTabState.input = sug.typoSuggestion || sug.spanish; renderTab(); handleAdd(sug.typoSuggestion || sug.spanish); }
+          }, 'Use'),
+          el('button', {
+            class: 'btn btn-ghost',
+            onClick: async () => {
+              state.words.push({
+                id: Date.now() + Math.random(),
+                spanish: sug.original,
+                english: sug.english + ' (unverified)',
+                partOfSpeech: sug.partOfSpeech,
+                gender: sug.gender,
+                isVerb: sug.isVerb,
+                infinitive: sug.infinitive,
+                added: Date.now(),
+                ease: 2.5, interval: 0, reps: 0, nextDue: Date.now()
+              });
+              await saveWords();
+              showToast('Added: ' + sug.original);
+              addTabState.input = '';
+              addTabState.suggestion = null;
+              renderTab();
+              renderHeader();
+            }
+          }, 'Keep "' + sug.original + '"')
+        )
+      )
+    );
+  }
+
+  // Import buttons
+  const fileInput = el('input', {
+    type: 'file',
+    class: 'file-input',
+    accept: '.txt,.md,.csv',
+    onChange: async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const text = await file.text();
+      addTabState.bulkInput = text;
+      addTabState.showBulk = true;
+      e.target.value = '';
+      renderTab();
+    }
+  });
+
+  main.appendChild(
+    el('div', { class: 'import-actions' },
+      el('button', {
+        class: 'btn btn-ghost',
+        onClick: () => { addTabState.showBulk = !addTabState.showBulk; renderTab(); }
+      }, addTabState.showBulk ? '× Cancel bulk' : '≡ Bulk paste'),
+      el('button', { class: 'btn btn-ghost', onClick: () => fileInput.click() }, '↑ Import file'),
+      fileInput
+    )
+  );
+
+  // Bulk
+  if (addTabState.showBulk) {
+    const bulkInput = el('textarea', {
+      class: 'input-field',
+      placeholder: 'Paste any text — class notes, mixed list, anything. Claude will extract the Spanish words.',
+      onInput: (e) => { addTabState.bulkInput = e.target.value; }
+    });
+    bulkInput.value = addTabState.bulkInput;
+
+    const parseBtn = el('button', {
+      class: 'btn btn-primary',
+      onClick: async () => {
+        if (!addTabState.bulkInput.trim()) return;
+        if (!state.apiKey) {
+          showToast('Add API key in settings', 'error');
+          openSettingsModal();
+          return;
+        }
+        parseBtn.textContent = '[ Parsing... ]';
+        parseBtn.disabled = true;
+        try {
+          const result = await parseTextDump(addTabState.bulkInput);
+          addTabState.parsed = result.words || [];
+          renderTab();
+        } catch (e) {
+          showToast('Parsing failed: ' + e.message.slice(0, 60), 'error');
+          parseBtn.textContent = '[ Parse with Claude ]';
+          parseBtn.disabled = false;
+        }
+      }
+    }, '[ Parse with Claude ]');
+
+    main.appendChild(el('div', { style: 'margin-top: 16px;' },
+      el('div', { class: 'section-label', style: 'margin-top: 16px;' }, 'Paste vocabulary list'),
+      bulkInput,
+      el('div', { style: 'margin-top: 8px; display: flex; gap: 8px;' }, parseBtn)
+    ));
+
+    if (addTabState.parsed) {
+      const preview = addTabState.parsed.slice(0, 20);
+      const result = el('div', { class: 'parsing-result' },
+        el('h4', null, 'Found ' + addTabState.parsed.length + ' words — preview'),
+        ...preview.map(p =>
+          el('div', { class: 'parsed-word' },
+            el('span', { class: 'parsed-word-es' }, p.spanish),
+            el('span', { class: 'parsed-word-en' }, p.english)
+          )
+        ),
+        addTabState.parsed.length > 20 ? el('div', { style: 'font-family: JetBrains Mono; font-size: 11px; color: var(--clay); text-align: center; padding: 8px 0; letter-spacing: 0.1em;' }, '+ ' + (addTabState.parsed.length - 20) + ' MORE') : null,
+        el('div', { style: 'margin-top: 12px; display: flex; gap: 8px; justify-content: flex-end;' },
+          el('button', {
+            class: 'btn btn-ghost',
+            onClick: () => { addTabState.parsed = null; renderTab(); }
+          }, 'Discard'),
+          el('button', {
+            class: 'btn btn-primary',
+            onClick: async () => {
+              let added = 0, skipped = 0;
+              for (const p of addTabState.parsed) {
+                const dup = state.words.find(w => w.spanish.toLowerCase() === p.spanish.toLowerCase());
+                if (dup) { skipped++; continue; }
+                state.words.push({
+                  id: Date.now() + Math.random() + added,
+                  spanish: p.spanish,
+                  english: p.english,
+                  partOfSpeech: p.partOfSpeech,
+                  gender: p.gender,
+                  isVerb: p.isVerb,
+                  infinitive: p.infinitive,
+                  added: Date.now() + added,
+                  ease: 2.5, interval: 0, reps: 0, nextDue: Date.now()
+                });
+                added++;
+              }
+              await saveWords();
+              showToast('Imported ' + added + ' words' + (skipped ? ' (' + skipped + ' duplicates)' : ''));
+              addTabState.bulkInput = '';
+              addTabState.parsed = null;
+              addTabState.showBulk = false;
+              renderTab();
+              renderHeader();
+            }
+          }, 'Import all')
+        )
+      );
+      main.appendChild(result);
+    }
+  }
+
+  // Recent
+  const recent = [...state.words].sort((a, b) => b.added - a.added).slice(0, 8);
+  main.appendChild(el('div', { style: 'margin-top: 32px;' },
+    el('div', { class: 'section-label' }, 'Recently added'),
+    recent.length === 0
+      ? el('div', { class: 'empty-state' }, 'No words yet — add your first above')
+      : el('div', { class: 'word-list' },
+          ...recent.map(w => buildWordCard(w))
+        )
+  ));
+}
+
+function buildWordCard(w, opts) {
+  opts = opts || {};
+  const card = el('div', { class: 'word-card', onClick: () => openElaborateModal(w) },
+    el('div', { class: 'word-card-content' },
+      el('div', { class: 'word-card-spanish' }, withArticle(w)),
+      el('div', { class: 'word-card-english' }, w.english),
+      el('div', { class: 'word-card-meta' },
+        w.partOfSpeech +
+        (w.gender ? ' · ' + w.gender : '') +
+        (opts.showReps ? ' · REPS ' + String(w.reps || 0).padStart(2, '0') : '') +
+        (opts.showDue && isDue(w) ? ' · ' : '')
+      )
+    ),
+    opts.deletable
+      ? el('button', {
+          class: 'icon-btn',
+          title: 'Delete',
+          onClick: (e) => {
+            e.stopPropagation();
+            if (confirm('Delete "' + w.spanish + '"?')) {
+              state.words = state.words.filter(x => x.id !== w.id);
+              saveWords();
+              renderTab();
+              renderHeader();
+            }
+          }
+        }, '×')
+      : el('button', {
+          class: 'btn btn-ghost',
+          style: 'padding: 6px 10px; font-size: 10px;',
+          onClick: (e) => { e.stopPropagation(); openElaborateModal(w); }
+        }, 'Elaborate →')
+  );
+
+  if (opts.showDue && isDue(w)) {
+    card.querySelector('.word-card-meta').appendChild(
+      el('span', { style: 'color: var(--rust);' }, 'DUE')
+    );
+  }
+  return card;
+}
+
+// ============= REVIEW TAB =============
+let reviewState = { queue: [], idx: 0, flipped: false, swiping: null, touchStart: null, touchDelta: 0 };
+
+function renderReviewTab() {
+  // Build queue once per render entry
+  reviewState.queue = state.words.filter(isDue).sort((a, b) => (a.nextDue || 0) - (b.nextDue || 0));
+
+  if (reviewState.queue.length === 0) {
+    main.appendChild(el('div', { class: 'review-finished' },
+      el('h2', null, 'Nothing due'),
+      el('p', null, 'Come back later or add new words to study.')
+    ));
+    return;
+  }
+
+  if (reviewState.idx >= reviewState.queue.length) {
+    main.appendChild(el('div', { class: 'review-finished' },
+      el('h2', null, 'Done!'),
+      el('p', null, 'You reviewed ' + reviewState.queue.length + ' card' + (reviewState.queue.length === 1 ? '' : 's') + '. Solid work.'),
+      el('button', {
+        class: 'btn btn-primary',
+        onClick: () => { reviewState.idx = 0; reviewState.flipped = false; renderTab(); renderHeader(); }
+      }, '[ Reload ]')
+    ));
+    return;
+  }
+
+  const card = reviewState.queue[reviewState.idx];
+
+  const handleAnswer = async (quality) => {
+    const updated = sm2(card, quality);
+    const idx = state.words.findIndex(w => w.id === card.id);
+    if (idx >= 0) state.words[idx] = { ...state.words[idx], ...updated };
+    await saveWords();
+    reviewState.swiping = quality < 3 ? 'left' : 'right';
+    renderTab();
+    setTimeout(() => {
+      reviewState.swiping = null;
+      reviewState.flipped = false;
+      reviewState.idx += 1;
+      renderTab();
+      renderHeader();
+    }, 400);
+  };
+
+  const forgotBtn = el('button', { class: 'btn btn-rust', onClick: () => handleAnswer(0) }, 'FORGOT');
+  const rememberBtn = el('button', { class: 'btn btn-primary', onClick: () => handleAnswer(4) }, 'REMEMBER');
+
+  const flashcard = el('div', {
+    class: 'flashcard' + (reviewState.flipped ? ' flipped' : '') + (reviewState.swiping ? ' swiping-' + reviewState.swiping : ''),
+    onClick: () => {
+      if (reviewState.swiping) return;
+      reviewState.flipped = !reviewState.flipped;
+      flashcard.classList.toggle('flipped');
+    }
+  });
+
+  const inner = el('div', { class: 'flashcard-inner' },
+    el('div', { class: 'flashcard-face' },
+      el('div', { class: 'flashcard-meta' },
+        card.partOfSpeech + (card.gender ? ' · ' + card.gender : '') + ' // REPS ' + String(card.reps || 0).padStart(2, '0')),
+      el('div', { class: 'flashcard-word' }, withArticle(card)),
+      el('div', { class: 'flashcard-hint' }, 'tap to flip · space')
+    ),
+    el('div', { class: 'flashcard-face back' },
+      el('div', { class: 'flashcard-meta dark' }, 'TRANSLATION'),
+      el('div', null,
+        el('div', { class: 'flashcard-word back-word' }, card.english),
+        el('div', { class: 'flashcard-accent' }),
+        el('div', { class: 'flashcard-translation' }, withArticle(card))
+      ),
+      el('div', { class: 'flashcard-hint' }, 'swipe ← forgot · → remember')
+    )
+  );
+  flashcard.appendChild(inner);
+
+  // Touch swipe
+  flashcard.addEventListener('touchstart', (e) => { reviewState.touchStart = e.touches[0].clientX; }, { passive: true });
+  flashcard.addEventListener('touchmove', (e) => {
+    if (reviewState.touchStart === null) return;
+    reviewState.touchDelta = e.touches[0].clientX - reviewState.touchStart;
+    if (Math.abs(reviewState.touchDelta) > 10) {
+      inner.style.transform = 'translateX(' + reviewState.touchDelta + 'px) rotate(' + (reviewState.touchDelta * 0.05) + 'deg)';
+      inner.style.transition = 'none';
+    }
+  }, { passive: true });
+  flashcard.addEventListener('touchend', () => {
+    if (reviewState.touchStart === null) return;
+    if (Math.abs(reviewState.touchDelta) > 100) {
+      handleAnswer(reviewState.touchDelta < 0 ? 0 : 4);
+    } else {
+      inner.style.transform = '';
+      inner.style.transition = '';
+    }
+    reviewState.touchStart = null;
+    reviewState.touchDelta = 0;
+  });
+
+  const container = el('div', { class: 'review-container' },
+    el('div', { class: 'review-progress' },
+      el('span', { class: 'current' }, '[ ' + String(reviewState.idx + 1).padStart(2, '0') + ' / ' + String(reviewState.queue.length).padStart(2, '0') + ' ]'),
+      el('span', { class: 'total' }, 'DUE TODAY')
+    ),
+    el('div', { class: 'review-progress-bar' },
+      el('div', { class: 'review-progress-fill', style: 'width: ' + ((reviewState.idx / reviewState.queue.length) * 100) + '%;' })
+    ),
+    flashcard,
+    el('div', { class: 'review-actions' }, forgotBtn, rememberBtn),
+    el('div', { style: 'margin-top: 16px;' },
+      el('button', {
+        class: 'btn btn-ghost',
+        style: 'padding: 6px 12px; font-size: 10px;',
+        onClick: () => openElaborateModal(card)
+      }, 'Elaborate this word →')
+    )
+  );
+
+  main.appendChild(container);
+}
+
+// Keyboard shortcuts for review
+document.addEventListener('keydown', (e) => {
+  if (state.tab !== 'review') return;
+  if (document.querySelector('.modal-overlay')) return;
+  const card = reviewState.queue && reviewState.queue[reviewState.idx];
+  if (!card) return;
+  if (e.key === ' ' || e.key === 'Enter') {
+    e.preventDefault();
+    if (!reviewState.flipped) {
+      reviewState.flipped = true;
+      const fc = document.querySelector('.flashcard');
+      if (fc) fc.classList.add('flipped');
+    }
+  } else if (e.key === '1' || e.key === 'ArrowLeft') {
+    handleReviewAnswer(0);
+  } else if (e.key === '2' || e.key === 'ArrowRight') {
+    handleReviewAnswer(4);
+  }
+});
+
+async function handleReviewAnswer(quality) {
+  const card = reviewState.queue[reviewState.idx];
+  if (!card) return;
+  const updated = sm2(card, quality);
+  const idx = state.words.findIndex(w => w.id === card.id);
+  if (idx >= 0) state.words[idx] = { ...state.words[idx], ...updated };
+  await saveWords();
+  reviewState.swiping = quality < 3 ? 'left' : 'right';
+  renderTab();
+  setTimeout(() => {
+    reviewState.swiping = null;
+    reviewState.flipped = false;
+    reviewState.idx += 1;
+    renderTab();
+    renderHeader();
+  }, 400);
+}
+
+// ============= ALL TAB =============
+let allTabState = { search: '', sort: 'added' };
+
+function renderAllTab() {
+  const search = el('input', {
+    type: 'text',
+    class: 'input-field',
+    value: allTabState.search,
+    placeholder: 'Search...',
+    onInput: (e) => { allTabState.search = e.target.value; renderAllList(); }
+  });
+
+  const filterRow = el('div', { class: 'filter-row' },
+    ...['added', 'alpha', 'due'].map(k =>
+      el('button', {
+        class: 'btn ' + (allTabState.sort === k ? 'btn-primary' : 'btn-ghost'),
+        onClick: () => { allTabState.sort = k; renderTab(); }
+      }, k === 'added' ? 'Newest' : k === 'alpha' ? 'A → Z' : 'Due first')
+    )
+  );
+
+  const listContainer = el('div', { id: 'allList' });
+
+  const renderAllList = () => {
+    clear(listContainer);
+    const filtered = state.words.filter(w =>
+      w.spanish.toLowerCase().includes(allTabState.search.toLowerCase()) ||
+      w.english.toLowerCase().includes(allTabState.search.toLowerCase())
+    );
+    const sorted = [...filtered].sort((a, b) => {
+      if (allTabState.sort === 'added') return b.added - a.added;
+      if (allTabState.sort === 'alpha') return a.spanish.localeCompare(b.spanish);
+      if (allTabState.sort === 'due') return (a.nextDue || 0) - (b.nextDue || 0);
+      return 0;
+    });
+
+    if (sorted.length === 0) {
+      listContainer.appendChild(el('div', { class: 'empty-state' }, 'No cards yet'));
+    } else {
+      const list = el('div', { class: 'word-list' });
+      sorted.forEach(w => list.appendChild(buildWordCard(w, { deletable: true, showReps: true, showDue: true })));
+      listContainer.appendChild(list);
+    }
+  };
+
+  main.appendChild(el('div', { class: 'section-label' }, 'All cards · ' + state.words.length));
+  main.appendChild(el('div', { class: 'input-row' }, search));
+  main.appendChild(filterRow);
+  main.appendChild(listContainer);
+  renderAllList();
+}
+
+// ============= STATS TAB =============
+function renderStatsTab() {
+  const total = state.words.length;
+  const due = state.words.filter(isDue).length;
+  const learned = state.words.filter(w => (w.reps || 0) >= 3).length;
+  const newCards = state.words.filter(w => (w.reps || 0) === 0).length;
+  const verbs = state.words.filter(w => w.isVerb).length;
+  const nouns = state.words.filter(w => w.partOfSpeech === 'noun').length;
+  const others = total - verbs - nouns;
+  const week = Date.now() - 7 * 24 * 60 * 60 * 1000;
+  const reviewedThisWeek = state.words.filter(w => w.lastReviewed && w.lastReviewed > week).length;
+  const avgEase = total > 0 ? (state.words.reduce((s, w) => s + (w.ease || 2.5), 0) / total).toFixed(2) : '—';
+
+  const statCard = (label, value, sub, variant) => el('div', { class: 'stat-card ' + (variant || '') },
+    el('div', { class: 'stat-label' }, label),
+    el('div', { class: 'stat-value' }, String(value)),
+    sub ? el('div', { class: 'stat-sub' }, sub) : null
+  );
+
+  main.appendChild(el('div', { class: 'section-label' }, 'Overview'));
+  main.appendChild(el('div', { class: 'stats-grid' },
+    statCard('Total cards', total),
+    statCard('Due now', due, null, 'rust'),
+    statCard('Learned', learned, '3+ successful reps'),
+    statCard('New', newCards, 'Never reviewed', 'clay')
+  ));
+
+  main.appendChild(el('div', { class: 'section-label' }, 'Breakdown'));
+  main.appendChild(el('div', { class: 'stats-grid' },
+    statCard('Verbs', verbs, null, 'clay'),
+    statCard('Nouns', nouns, null, 'clay'),
+    statCard('Other', others, null, 'clay')
+  ));
+
+  main.appendChild(el('div', { class: 'section-label' }, 'Activity'));
+  main.appendChild(el('div', { class: 'stats-grid' },
+    statCard('Reviewed (7d)', reviewedThisWeek),
+    statCard('Avg ease', avgEase, 'SM-2 difficulty')
+  ));
+}
+
+// ============= HEADER & TABS =============
+function renderHeader() {
+  const dueCount = state.words.filter(isDue).length;
+  document.getElementById('dueCount').textContent = '[' + dueCount + ']';
+  document.getElementById('totalCount').textContent = '[' + state.words.length + ']';
+  const apiBtn = document.getElementById('apiBtn');
+  if (state.apiKey) {
+    apiBtn.className = 'api-status connected';
+    apiBtn.textContent = '● API CONNECTED';
+  } else {
+    apiBtn.className = 'api-status disconnected';
+    apiBtn.textContent = '○ SET API KEY';
+  }
+}
+
+async function saveWords() {
+  await storageSet('words', state.words);
+  scheduleSync();
+}
+
+// ============= INIT =============
+async function init() {
+  document.getElementById('apiBtn').addEventListener('click', openSettingsModal);
+
+  // Sync indicator click — show error or retry
+  window.__notasSyncClick = () => {
+    if (state.syncStatus === 'error' && state.lastSyncError) {
+      if (confirm('Sync error:\n\n' + state.lastSyncError + '\n\nRetry now?')) {
+        pushToSheet();
+      }
+    } else if (state.syncUrl) {
+      pushToSheet();
+      showToast('Syncing...');
+    } else {
+      openSettingsModal();
+    }
+  };
+
+  document.getElementById('tabs').addEventListener('click', (e) => {
+    const btn = e.target.closest('.tab');
+    if (!btn) return;
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    btn.classList.add('active');
+    state.tab = btn.dataset.tab;
+    if (state.tab === 'review') {
+      reviewState.idx = 0;
+      reviewState.flipped = false;
+    }
+    renderTab();
+  });
+
+  // Load
+  const w = await storageGet('words');
+  const k = await storageGet('apiKey');
+  const u = await storageGet('syncUrl');
+  const ls = await storageGet('lastSyncedAt');
+  if (Array.isArray(w)) state.words = w;
+  if (typeof k === 'string') state.apiKey = k;
+  if (typeof u === 'string') state.syncUrl = u;
+  if (typeof ls === 'number') state.lastSyncedAt = ls;
+  state.loaded = true;
+
+  renderHeader();
+  if (state.syncUrl) setSyncStatus('idle');
+  renderTab();
+}
+
+init().catch(e => {
+  document.getElementById('main').innerHTML =
+    '<div class="empty-state" style="color: var(--rust);">FAILED TO INITIALIZE: ' + (e.message || 'unknown') + '</div>';
+  console.error(e);
+});
+</script>
+</body>
+</html>
